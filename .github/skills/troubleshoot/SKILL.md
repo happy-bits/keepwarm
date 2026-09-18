@@ -1,6 +1,8 @@
 ---
 name: troubleshoot
 description: Diagnose startup and runtime problems for the KeepWarm app without fixing them. Show the issue clearly and ask whether the user wants it solved.
+user-invocable: true
+disable-model-invocation: true
 ---
 
 # Troubleshoot

@@ -1,6 +1,8 @@
 ---
 name: getting-started
 description: "Use when: helping someone start the KeepWarm app, find the dev commands, login with seeded users, understand backend/frontend wiring, or get oriented without fixing or starting anything."
+user-invocable: true
+disable-model-invocation: true
 ---
 
 # Getting Started
