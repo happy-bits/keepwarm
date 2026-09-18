@@ -1,7 +1,11 @@
 ---
-agent: agent
+name: overview
+description: Use when the user asks for a full project overview documented in overview.md.
+user-invocable: true
+disable-model-invocation: true
 ---
-Analyze the entire project. Create an overview of the project and put the answer in a new file `overview.md` with the following content:
+
+Analyze the entire project. Create an overview in a new file `overview.md` with the following content:
 
 ```markdown
 # Project name
@@ -27,5 +31,6 @@ List of technologies
 ## Development environment
 
 ## Tools and Packages
+
 List of tools and packages
 ```
