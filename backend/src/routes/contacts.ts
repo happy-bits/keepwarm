@@ -88,7 +88,7 @@ export function createContactRoutes(db: BetterSQLite3Database<typeof schema>) {
       .values({
         contactId: result.entity.id,
         sellerId: user.id,
-        occurredAt: data.occurredAt ?? createdAt,
+        occurredAt: data.occurredAt ? new Date(data.occurredAt).toISOString() : createdAt,
         type: data.type,
         summary: data.summary,
         outcome: data.outcome || null,
