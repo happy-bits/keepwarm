@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import ContactList from './pages/contacts/ContactList';
 import ContactForm from './pages/contacts/ContactForm';
+import ContactDetails from './pages/contacts/ContactDetails';
 import SellerList from './pages/sellers/SellerList';
 import SellerForm from './pages/sellers/SellerForm';
 import { LoadingSpinner } from './components/ui';
@@ -51,6 +52,7 @@ export default function App() {
         <Route index element={<Navigate to="/contacts" replace />} />
         <Route path="contacts" element={<ContactList />} />
         <Route path="contacts/new" element={<ContactForm />} />
+        <Route path="contacts/:id" element={<ContactDetails />} />
         <Route
           path="sellers"
           element={
@@ -79,4 +81,3 @@ export default function App() {
     </Routes>
   );
 }
-

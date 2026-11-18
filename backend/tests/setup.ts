@@ -54,8 +54,22 @@ export function createTestDatabase() {
       updated_at TEXT NOT NULL
     );
 
+    CREATE TABLE interactions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      contact_id INTEGER NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
+      seller_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      occurred_at TEXT NOT NULL,
+      type TEXT NOT NULL CHECK(type IN ('call', 'email', 'meeting', 'other')),
+      summary TEXT NOT NULL CHECK(length(trim(summary)) > 0),
+      outcome TEXT,
+      next_step TEXT,
+      created_at TEXT NOT NULL
+    );
+
     CREATE INDEX idx_contacts_seller_id ON contacts(seller_id);
     CREATE INDEX idx_sessions_token ON sessions(token);
+    CREATE INDEX idx_interactions_contact_occurred_at
+      ON interactions(contact_id, occurred_at DESC, id DESC);
   `);
 
   const db = drizzle(sqlite, { schema });
@@ -289,4 +303,3 @@ export function createTestContact(
     .returning()
     .get();
 }
-

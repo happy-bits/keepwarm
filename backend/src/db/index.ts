@@ -46,20 +46,34 @@ export function initializeDatabase() {
       updated_at TEXT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS interactions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      contact_id INTEGER NOT NULL REFERENCES contacts(id) ON DELETE CASCADE,
+      seller_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      occurred_at TEXT NOT NULL,
+      type TEXT NOT NULL CHECK(type IN ('call', 'email', 'meeting', 'other')),
+      summary TEXT NOT NULL CHECK(length(trim(summary)) > 0),
+      outcome TEXT,
+      next_step TEXT,
+      created_at TEXT NOT NULL
+    );
+
     CREATE INDEX IF NOT EXISTS idx_contacts_seller_id ON contacts(seller_id);
     CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
+    CREATE INDEX IF NOT EXISTS idx_interactions_contact_occurred_at
+      ON interactions(contact_id, occurred_at DESC, id DESC);
   `);
 }
 
 // Reset database (drop all tables and recreate)
 export function resetDatabase() {
   sqlite.exec(`
+    DROP TABLE IF EXISTS interactions;
     DROP TABLE IF EXISTS contacts;
     DROP TABLE IF EXISTS sessions;
     DROP TABLE IF EXISTS users;
   `);
   initializeDatabase();
 }
-
 
 

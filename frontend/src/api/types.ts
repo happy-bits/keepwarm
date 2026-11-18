@@ -25,6 +25,27 @@ export interface CreateContactData {
   company?: string | null;
 }
 
+export interface Interaction {
+  id: number;
+  contactId: number;
+  sellerId: number;
+  sellerName: string;
+  occurredAt: string;
+  type: 'call' | 'email' | 'meeting' | 'other';
+  summary: string;
+  outcome: string | null;
+  nextStep: string | null;
+  createdAt: string;
+}
+
+export interface CreateInteractionData {
+  occurredAt?: string;
+  type: Interaction['type'];
+  summary: string;
+  outcome?: string | null;
+  nextStep?: string | null;
+}
+
 // Seller types (for admin)
 export interface Seller {
   id: number;
@@ -57,4 +78,3 @@ export interface LoginResponse {
   token: string;
   user: User;
 }
-
