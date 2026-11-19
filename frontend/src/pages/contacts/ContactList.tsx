@@ -53,9 +53,12 @@ function ContactTable({ contacts, deleteContact }: { contacts: Contact[]; delete
                     <div className="flex items-center gap-4">
                       <Avatar name={contact.name} size="md" />
                       <div className="flex-1">
-                        <p className="text-white font-medium">
+                        <Link
+                          to={`/contacts/${contact.id}`}
+                          className="text-white font-medium hover:text-warm-400 transition-colors"
+                        >
                           {contact.name || 'No name'}
-                        </p>
+                        </Link>
                       </div>
                     </div>
                   </td>
@@ -151,4 +154,3 @@ export default function ContactList() {
     </div>
   );
 }
-

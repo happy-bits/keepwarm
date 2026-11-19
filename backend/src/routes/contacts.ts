@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import * as schema from '../db/schema.js';
 import { type AuthVariables } from '../middleware/auth.js';
@@ -12,6 +12,14 @@ const createContactSchema = z.object({
   name: z.string().min(1),
   email: z.string().email().optional().nullable(),
   company: z.string().optional().nullable(),
+});
+
+const createInteractionSchema = z.object({
+  occurredAt: z.string().datetime({ offset: true }).optional(),
+  type: z.enum(['call', 'email', 'meeting', 'other']),
+  summary: z.string().trim().min(1, 'Summary is required'),
+  outcome: z.string().trim().optional().nullable(),
+  nextStep: z.string().trim().optional().nullable(),
 });
 
 export function createContactRoutes(db: BetterSQLite3Database<typeof schema>) {
@@ -38,6 +46,64 @@ export function createContactRoutes(db: BetterSQLite3Database<typeof schema>) {
     if (!result.success) return result.response;
 
     return c.json({ contact: result.entity });
+  });
+
+  // GET /contacts/:id/interactions - List interactions for an accessible contact
+  app.get('/:id/interactions', (c) => {
+    const result = withEntityAccess<schema.Contact>(c, db, schema.contacts, 'Contact');
+    if (!result.success) return result.response;
+
+    const interactions = db
+      .select({
+        id: schema.interactions.id,
+        contactId: schema.interactions.contactId,
+        sellerId: schema.interactions.sellerId,
+        sellerName: schema.users.name,
+        occurredAt: schema.interactions.occurredAt,
+        type: schema.interactions.type,
+        summary: schema.interactions.summary,
+        outcome: schema.interactions.outcome,
+        nextStep: schema.interactions.nextStep,
+        createdAt: schema.interactions.createdAt,
+      })
+      .from(schema.interactions)
+      .innerJoin(schema.users, eq(schema.interactions.sellerId, schema.users.id))
+      .where(eq(schema.interactions.contactId, result.entity.id))
+      .orderBy(desc(schema.interactions.occurredAt), desc(schema.interactions.id))
+      .all();
+
+    return c.json({ interactions });
+  });
+
+  // POST /contacts/:id/interactions - Record an interaction for an accessible contact
+  app.post('/:id/interactions', zValidator('json', createInteractionSchema), (c) => {
+    const result = withEntityAccess<schema.Contact>(c, db, schema.contacts, 'Contact');
+    if (!result.success) return result.response;
+
+    const user = c.get('user');
+    const data = c.req.valid('json');
+    const createdAt = new Date().toISOString();
+    const interaction = db
+      .insert(schema.interactions)
+      .values({
+        contactId: result.entity.id,
+        sellerId: user.id,
+        occurredAt: data.occurredAt ?? createdAt,
+        type: data.type,
+        summary: data.summary,
+        outcome: data.outcome || null,
+        nextStep: data.nextStep || null,
+        createdAt,
+      })
+      .returning()
+      .get();
+
+    return c.json({
+      interaction: {
+        ...interaction,
+        sellerName: user.name,
+      },
+    }, 201);
   });
 
   // POST /contacts - Create new contact
@@ -75,4 +141,3 @@ export function createContactRoutes(db: BetterSQLite3Database<typeof schema>) {
 
   return app;
 }
-

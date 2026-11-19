@@ -118,6 +118,23 @@ Authorization: Bearer {{token}}
 GET {{baseUrl}}/api/contacts/1
 Authorization: Bearer {{token}}
 
+### List Contact Interactions (newest first)
+GET {{baseUrl}}/api/contacts/1/interactions
+Authorization: ******
+
+### Record an Interaction
+POST {{baseUrl}}/api/contacts/1/interactions
+Authorization: ******
+Content-Type: application/json
+
+{
+  "occurredAt": "2026-11-18T14:00:00.000Z",
+  "type": "meeting",
+  "summary": "Discussed the proposal",
+  "outcome": "Requested revised pricing",
+  "nextStep": "Send an updated proposal"
+}
+
 ### Create New Contact
 POST {{baseUrl}}/api/contacts
 Authorization: Bearer {{token}}
@@ -149,4 +166,3 @@ Authorization: Bearer {{token}}
 ### Reset and Reseed Database
 POST {{baseUrl}}/api/dev/reset
 Authorization: Bearer {{token}}
-

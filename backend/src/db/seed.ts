@@ -8,6 +8,7 @@ const SEED_DATE = '2024-01-15T10:00:00.000Z';
 
 export async function seedDatabase(db: BetterSQLite3Database<typeof schema>) {
   // Clear existing data
+  db.delete(schema.interactions).run();
   db.delete(schema.contacts).run();
   db.delete(schema.sessions).run();
   db.delete(schema.users).run();
@@ -161,6 +162,5 @@ if (isMainModule) {
   await seedDatabase(db);
   rawDb.close();
 }
-
 
 

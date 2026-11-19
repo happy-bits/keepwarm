@@ -31,10 +31,22 @@ export const contacts = sqliteTable('contacts', {
   updatedAt: text('updated_at').notNull().$defaultFn(() => new Date().toISOString()),
 });
 
+export const interactions = sqliteTable('interactions', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  contactId: integer('contact_id').notNull().references(() => contacts.id, { onDelete: 'cascade' }),
+  sellerId: integer('seller_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  occurredAt: text('occurred_at').notNull(),
+  type: text('type', { enum: ['call', 'email', 'meeting', 'other'] }).notNull(),
+  summary: text('summary').notNull(),
+  outcome: text('outcome'),
+  nextStep: text('next_step'),
+  createdAt: text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
+});
+
 // Type exports
 export type User = typeof users.$inferSelect;
 export type Session = typeof sessions.$inferSelect;
 export type Contact = typeof contacts.$inferSelect;
-
+export type Interaction = typeof interactions.$inferSelect;
 
 
